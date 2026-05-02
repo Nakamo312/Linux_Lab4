@@ -4,3 +4,4 @@ inventory.ini
 *.pem
 *.key
 .secrets/
+inventory.ini

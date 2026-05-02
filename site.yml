@@ -1,0 +1,32 @@
+---
+- name: Deploy Lab4 service from Git repo
+  hosts: lab4
+  become: yes
+  tasks:
+    - name: Copy service files from local repo to /opt/lab4-service
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: "{{ item.mode | default('0644') }}"
+      loop:
+        - { src: "service.sh", dest: "/opt/lab4-service/service.sh", mode: "0755" }
+        - { src: "lab4-service.service", dest: "/etc/systemd/system/lab4-service.service", mode: "0644" }
+        - { src: "lab4-healthcheck.sh", dest: "/usr/local/bin/lab4-healthcheck.sh", mode: "0755" }
+        - { src: "index.html", dest: "/opt/lab4-service/html/index.html", mode: "0644" }
+
+    - name: Create html directory
+      file:
+        path: /opt/lab4-service/html
+        state: directory
+
+    - name: Reload systemd and start service
+      systemd:
+        name: lab4-service
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: Healthcheck
+      uri:
+        url: http://127.0.0.1:8000/
+        status_code: 200
