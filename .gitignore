@@ -1,0 +1,6 @@
+*.pyc
+__pycache__/
+inventory.ini
+*.pem
+*.key
+.secrets/
